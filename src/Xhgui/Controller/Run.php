@@ -2,7 +2,7 @@
 
 class Xhgui_Controller_Run extends Xhgui_Controller
 {
-    public function __construct($app, $profiles, $watches)
+    public function __construct($app, Xhgui_Profiles $profiles, $watches)
     {
         $this->_app = $app;
         $this->_profiles = $profiles;
@@ -82,10 +82,21 @@ class Xhgui_Controller_Run extends Xhgui_Controller
                 $watchedFunctions = array_merge($watchedFunctions, $matches);
             }
         }
-
-        $profile = $result->sort('ewt', $result->getProfile());
+        $profileData = $result->getProfile();
+        // $result->sort('ewt', $result->getProfile());
 
         $this->_template = 'runs/view.twig';
+        $profile = [];
+        $i = 0;
+        $wt = $profileData['main()']['wt'];
+        foreach ($profileData as $name => $data) {
+            $data['name'] = $name;
+            $data['id'] = $i++;
+            $data['pwt'] = ($data['wt'] * 100)/$wt;
+            $data['pewt'] = ($data['ewt'] * 100)/$wt;
+            unset($data['parents']);
+            $profile[] = $data;
+        }
         $this->set(array(
             'profile' => $profile,
             'result' => $result,

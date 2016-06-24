@@ -31,27 +31,16 @@
  *
  */
 
-/* uprofiler support
- * The uprofiler extension is a fork of xhprof.  See: https://github.com/FriendsOfPHP/uprofiler
+/* tideways support
+ * The tideways extension is a fork of xhprof.  See: https://github.com/FriendsOfPHP/tideways
  *
- * The two extensions are very similar, and this script will use the uprofiler extension if it is loaded,
+ * The two extensions are very similar, and this script will use the tideways extension if it is loaded, 
  * or the xhprof extension if not.  At least one of these extensions must be present.
  *
- * The UPROFILER_* constants mirror the XHPROF_* ones exactly, with one additional constant available:
+ * The TIDEWAYS_* constants mirror the XHPROF_* ones exactly, with one additional constant available:
  *
- * UPROFILER_FLAGS_FUNCTION_INFO (integer)
+ * TIDEWAYS_FLAGS_FUNCTION_INFO (integer)
  *  Adds more information about function calls (this information is not currently used by XHGui)
- */
-
-/* Tideways support
- * The tideways extension is a fork of xhprof. See https://github.com/tideways/php-profiler-extension
- *
- * It works on PHP 5.5+ and PHP 7 and improves on the ancient timing algorithms used by XHProf using
- * more modern Linux APIs to collect high performance timing data.
- *
- * The TIDEWAYS_* constants are similar to the ones by XHProf, however you need to disable timeline
- * mode when using XHGui, because it only supports callgraphs and we can save the overhead. Use
- * TIDEWAYS_FLAGS_NO_SPANS to disable timeline mode.
  */
 
 // this file should not - under no circumstances - interfere with any other application
@@ -73,39 +62,52 @@ if (file_exists($dir . '/config/config.php')) {
 }
 unset($dir);
 
-if ((!extension_loaded('mongo') && !extension_loaded('mongodb')) && Xhgui_Config::read('save.handler') === 'mongodb') {
-    error_log('xhgui - extension mongo not loaded');
+if (!extension_loaded('mongo') && !extension_loaded('mongodb') && Xhgui_Config::read('save.handler') === 'mongodb') {
+    die('xhgui - extension mongo not loaded');
     return;
 }
 
-if (!Xhgui_Config::shouldRun()) {
-    return;
+
+if (Xhgui_Config::shouldRun()) {
+    \XH::autoStart();
 }
 
 if (!isset($_SERVER['REQUEST_TIME_FLOAT'])) {
     $_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
 }
 
-if (extension_loaded('uprofiler')) {
-    uprofiler_enable(UPROFILER_FLAGS_CPU | UPROFILER_FLAGS_MEMORY);
-} else if (extension_loaded('tideways')) {
-    tideways_enable(TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY | TIDEWAYS_FLAGS_NO_SPANS);
-} else {
-    if (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 4) {
-        xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY | XHPROF_FLAGS_NO_BUILTINS);
-    } else {
-        xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
-    }
-}
 
-register_shutdown_function(
-    function () {
+class XH
+{
+    static function start()
+    {
+        if (extension_loaded('uprofiler')) {
+            uprofiler_enable(UPROFILER_FLAGS_CPU | UPROFILER_FLAGS_MEMORY);
+        } else {
+            if (extension_loaded('tideways')) {
+                tideways_enable(
+                    TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY | TIDEWAYS_FLAGS_NO_SPANS | TIDEWAYS_FLAGS_NO_BUILTINS
+                );
+            } else {
+                if (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 4) {
+                    xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY | XHPROF_FLAGS_NO_BUILTINS);
+                } else {
+                    xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
+                }
+            }
+        }
+    }
+
+    static function stop()
+    {
         if (extension_loaded('uprofiler')) {
             $data['profile'] = uprofiler_disable();
-        } else if (extension_loaded('tideways')) {
-            $data['profile'] = tideways_disable();
         } else {
-            $data['profile'] = xhprof_disable();
+            if (extension_loaded('tideways')) {
+                $data['profile'] = tideways_disable();
+            } else {
+                $data['profile'] = xhprof_disable();
+            }
         }
 
         // ignore_user_abort(true) allows your PHP script to continue executing, even if the user has terminated their request.
@@ -119,31 +121,27 @@ register_shutdown_function(
             require dirname(dirname(__FILE__)) . '/src/bootstrap.php';
         }
 
-        $uri = array_key_exists('REQUEST_URI', $_SERVER)
-            ? $_SERVER['REQUEST_URI']
-            : null;
+        $uri = array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : null;
         if (empty($uri) && isset($_SERVER['argv'])) {
             $cmd = basename($_SERVER['argv'][0]);
             $uri = $cmd . ' ' . implode(' ', array_slice($_SERVER['argv'], 1));
         }
 
-        $time = array_key_exists('REQUEST_TIME', $_SERVER)
-            ? $_SERVER['REQUEST_TIME']
-            : time();
+        $time = array_key_exists('REQUEST_TIME', $_SERVER) ? $_SERVER['REQUEST_TIME'] : time();
         $requestTimeFloat = explode('.', $_SERVER['REQUEST_TIME_FLOAT']);
         if (!isset($requestTimeFloat[1])) {
             $requestTimeFloat[1] = 0;
         }
 
         if (Xhgui_Config::read('save.handler') === 'file') {
-            $requestTs = array('sec' => $time, 'usec' => 0);
-            $requestTsMicro = array('sec' => $requestTimeFloat[0], 'usec' => $requestTimeFloat[1]);
+            $requestTs = ['sec' => $time, 'usec' => 0];
+            $requestTsMicro = ['sec' => $requestTimeFloat[0], 'usec' => $requestTimeFloat[1]];
         } else {
             $requestTs = new MongoDate($time);
             $requestTsMicro = new MongoDate($requestTimeFloat[0], $requestTimeFloat[1]);
         }
 
-        $data['meta'] = array(
+        $data['meta'] = [
             'url' => $uri,
             'SERVER' => $_SERVER,
             'get' => $_GET,
@@ -152,15 +150,24 @@ register_shutdown_function(
             'request_ts' => $requestTs,
             'request_ts_micro' => $requestTsMicro,
             'request_date' => date('Y-m-d', $time),
-        );
+        ];
 
         try {
             $config = Xhgui_Config::all();
-            $config += array('db.options' => array());
+            $config += ['db.options' => []];
             $saver = Xhgui_Saver::factory($config);
             $saver->save($data);
         } catch (Exception $e) {
             error_log('xhgui - ' . $e->getMessage());
         }
     }
-);
+
+    static function autoStart() {
+        \XH::start();
+        register_shutdown_function(
+            function () {
+                \XH::stop();
+            }
+        );
+    }
+}
