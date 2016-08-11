@@ -125,3 +125,11 @@ body {
     background-color: #eeeeee;
     border: inherit;
 }
+
+.table tbody {
+    background-color: white;
+}
+
+.table thead {
+    background-color: #eeeeee;
+}

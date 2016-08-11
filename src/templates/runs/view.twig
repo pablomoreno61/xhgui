@@ -51,8 +51,8 @@
 {% endblock %}
 
 {% block jsfoot %}
-<script src="{{ static('/js/jquery-ui-1.9.2.custom.min.js') }}" type="text/javascript"></script>
-<script src="{{ static('/js/jquery.event.drag-2.2.js') }}" type="text/javascript"></script>
+<script src="{{ static('js/jquery-ui-1.9.2.custom.min.js') }}" type="text/javascript"></script>
+<script src="{{ static('js/jquery.event.drag-2.2.js') }}" type="text/javascript"></script>
 
 <script src="{{ static('js/slick/slick.core.js') }}" type="text/javascript"></script>
 <script src="{{ static('js/slick/slick.formatters.js') }}" type="text/javascript"></script>
@@ -66,7 +66,9 @@
 
         var nameFormatter =  function(column, row, data) {
             var namesPart = (data || '').split('::');
-            var fname ='<b class="cell-p-fname" title="' + data + '">' +  namesPart.pop() + '</b>';
+            var fname ='<a href="{{ url('run.symbol', {'id': result.id|trim}) }}&amp;symbol='
+                    + window.encodeURI(data) +'" title="' + data + '" class="cell-p-fname">'
+                    +  namesPart.pop() + '</b></a>';
             namesPart = namesPart.length ? namesPart.pop().split(/\\|_/) : namesPart;
 
             var className = namesPart.length ? '<b class="cell-p-class">' + namesPart.pop() + '</b>' : '';
