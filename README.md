@@ -3,27 +3,19 @@ xhgui
 
 A graphical interface for XHProf data built on MongoDB.
 
-This tool requires that [XHProf](http://pecl.php.net/package/xhprof) or its one
-of its forks [Uprofiler](https://github.com/FriendsOfPHP/uprofiler),
-[Tideways](https://github.com/tideways/php-profiler-extension) are installed.
-XHProf is a PHP Extension that records and provides profiling data.
+This tool requires that [Tideways](https://github.com/tideways/php-profiler-extension) are installed.
+Tideways is a PHP Extension that records and provides profiling data.
 XHGui (this tool) takes that information, saves it in MongoDB, and provides
 a convenient GUI for working with it.
-
-[![Build Status](https://travis-ci.org/perftools/xhgui.svg?branch=master)](https://travis-ci.org/perftools/xhgui)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/perftools/xhgui/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/perftools/xhgui/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/perftools/xhgui/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/perftools/xhgui/?branch=master)
 
 System Requirements
 ===================
 
 XHGui has the following requirements:
 
- * PHP version 5.5 or later.
- * [XHProf](http://pecl.php.net/package/xhprof),
-   [Uprofiler](https://github.com/FriendsOfPHP/uprofiler) or
-   [Tideways](https://github.com/tideways/php-profiler-extension) to actually profile the data.
- * [MongoDB Extension](http://pecl.php.net/package/mongo) MongoDB PHP driver.
+ * PHP version 7.0 or later.
+ * [Tideways](https://github.com/tideways/php-profiler-extension) to actually profile the data.
+ * [MongoDB Extension](http://pecl.php.net/package/mongodb) MongoDB PHP driver.
    XHGui requires verison 1.3.0 or later.
  * [MongoDB](http://www.mongodb.org/) MongoDB Itself. XHGui requires version 2.2.0 or later.
  * [mcrypt](http://php.net/manual/en/book.mcrypt.php) PHP must be configured
