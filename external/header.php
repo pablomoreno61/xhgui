@@ -5,6 +5,11 @@
 class XH
 {
     private static $profileType;
+    private static $mongoConfig = [
+        'db.host' => 'mongodb://mongodb:27017',
+        'db.db' => 'xhprof',
+        'db.options' => []
+    ];
 
     static function start()
     {
@@ -37,14 +42,11 @@ class XH
             $uri = $cmd . ' ' . implode(' ', array_slice($_SERVER['argv'], 1));
         }
 
-        $time = array_key_exists('REQUEST_TIME', $_SERVER) ? $_SERVER['REQUEST_TIME'] : time();
-        $requestTimeFloat = explode('.', $_SERVER['REQUEST_TIME_FLOAT']);
-        if (!isset($requestTimeFloat[1])) {
-            $requestTimeFloat[1] = 0;
-        }
+        $time = empty($_SERVER['REQUEST_TIME']) ? (new DateTime())->getTimestamp() : $_SERVER['REQUEST_TIME'];
+        $milliseconds = empty($_SERVER['REQUEST_TIME_FLOAT']) ? (new DateTime())->getTimestamp() : $_SERVER['REQUEST_TIME_FLOAT'];
 
-        $requestTs = new MongoDate($time);
-        $requestTsMicro = new MongoDate($requestTimeFloat[0], $requestTimeFloat[1]);
+        $requestTs = new MongoDB\BSON\UTCDateTime(DateTime::createFromFormat('U', $time));
+        $requestTsMicro = new MongoDB\BSON\UTCDateTime(preg_replace('/\D/', '', $milliseconds));
 
         $data['meta'] = [
             'url' => $uri,
@@ -58,15 +60,10 @@ class XH
         ];
 
         try {
-            $config = [
-                'db.host' => 'mongodb://127.0.0.1:27017',
-                'db.db' => 'xhprof',
-                'db.options' => []
-            ];
-
-            $mongo = new MongoClient($config['db.host'], $config['db.options']);
-//            $mongo->{$config['db.db']}->results->findOne();
-            $mongo->{$config['db.db']}->results->insert($data, array('w' => 0));
+            $manager = new MongoDB\Driver\Manager(self::$mongoConfig['db.host']);
+            $bulk = new MongoDB\Driver\BulkWrite;
+            $bulk->insert($data);
+            $cursor = $manager->executeBulkWrite(self::$mongoConfig['db.db'].'.results', $bulk);
         } catch (Exception $e) {
             error_log('xhgui - ' . $e->getMessage());
         }
@@ -76,9 +73,9 @@ class XH
         if (extension_loaded('tideways')) {
             self::$profileType = 'tideways';
         } elseif (extension_loaded('uprofiler')) {
-            self::$profileType = 'tideways';
+            self::$profileType = 'uprofiler';
         } elseif (extension_loaded('xhprof')) {
-            self::$profileType = 'tideways';
+            self::$profileType = 'xhprof';
         }
         if (empty(self::$profileType)) {
             error_log('xhgui - either extension xhprof, uprofiler or tideways must be loaded');
