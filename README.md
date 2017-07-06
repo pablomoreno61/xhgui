@@ -16,7 +16,7 @@ XHGui has the following requirements:
  * PHP version 7.0 or later.
  * [Tideways](https://github.com/tideways/php-profiler-extension) to actually profile the data.
  * [MongoDB Extension](http://pecl.php.net/package/mongodb) MongoDB PHP driver.
-   XHGui requires verison 1.3.0 or later.
+   XHGui requires verison 1.0.0 or later.
  * [MongoDB](http://www.mongodb.org/) MongoDB Itself. XHGui requires version 2.2.0 or later.
  * [mcrypt](http://php.net/manual/en/book.mcrypt.php) PHP must be configured
    with mcrypt (which is a dependency of Slim).
