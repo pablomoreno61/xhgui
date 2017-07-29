@@ -46,6 +46,20 @@ class Xhgui_Profiles
         )));
     }
 
+
+    /**
+     * Get a single profile run by id.
+     *
+     * @param string $id The id of the profile to get.
+     * @return Xhgui_Profile
+     */
+    public function delete($id)
+    {
+        return $this->_wrap($this->_collection->remove(array(
+            '_id' => new MongoId($id)
+        )));
+    }
+
     /**
      * Get the list of profiles for a simplified url.
      *

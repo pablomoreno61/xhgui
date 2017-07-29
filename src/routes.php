@@ -100,3 +100,8 @@ $app->get('/waterfall/data', function () use ($di) {
     $di['waterfallController']->query();
 })->name('waterfall.data');
 
+
+$app->post('/run/delete/:id', function ($id) use ($di, $app) {
+    $di['runController']->delete($id);
+})->name('run.delete');
+

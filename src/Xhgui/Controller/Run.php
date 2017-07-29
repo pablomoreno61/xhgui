@@ -2,6 +2,11 @@
 
 class Xhgui_Controller_Run extends Xhgui_Controller
 {
+    /**
+     * @var Xhgui_Profiles
+     */
+    private $_profiles;
+
     public function __construct($app, Xhgui_Profiles $profiles, $watches)
     {
         $this->_app = $app;
@@ -296,4 +301,9 @@ class Xhgui_Controller_Run extends Xhgui_Controller
         return $response->body(json_encode($callgraph));
     }
 
+    public function delete($id)
+    {
+        $this->_profiles->delete($id);
+        $this->_app->flash('success', 'Profile was deleted.');
+    }
 }

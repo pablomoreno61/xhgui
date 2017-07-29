@@ -18,6 +18,7 @@ class Xhgui_Twig_Extension extends Twig_Extension
     {
         return array(
             'url' => new Twig_Function_Method($this, 'url'),
+            'urlFor' => new \Twig_SimpleFunction('urlFor', array($this, 'urlFor')),
             'static' => new Twig_Function_Method($this, 'staticUrl'),
             'percent' => new Twig_Function_Method($this, 'makePercent', array(
                 'is_safe' => array('html')
@@ -35,6 +36,11 @@ class Xhgui_Twig_Extension extends Twig_Extension
             'as_percent' => new Twig_Filter_Method($this, 'formatPercent', array('is_safe' => array('html'))),
             'truncate' => new Twig_Filter_Method($this, 'truncate'),
         );
+    }
+
+    public function urlFor($name, $params = array(), $appName = 'default')
+    {
+        return  $this->_app->urlFor($name, $params);
     }
 
     protected function _getBase()
