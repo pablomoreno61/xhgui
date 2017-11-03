@@ -61,6 +61,16 @@ class Xhgui_Profiles
     }
 
     /**
+     * Get a all profill.
+     *
+     * @param string $id The id of the profile to get.
+     * @return Xhgui_Profile
+     */
+    public function deleteAll()
+    {
+        return $this->_wrap($this->_collection->remove(array()));
+    }
+    /**
      * Get the list of profiles for a simplified url.
      *
      * @param string $url The url to load profiles for.
