@@ -75,7 +75,7 @@
             <td class="right">{{ result.get('main()', 'mu') |as_bytes }}</td>
             <td class="right">{{ result.get('main()', 'pmu') |as_bytes }}</td>
             <td class="right">
-                <a action="delete" class="btn  btn-mini" href="{{ urlFor('run.delete', {'id': result.id|trim }) }}"
+                <a action="delete"  href="{{ urlFor('run.delete', {'id': result.id|trim }) }}"
                     title="Remove item"
                     >
                     <i class="icon-remove"></i>

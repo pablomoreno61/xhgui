@@ -44,7 +44,7 @@ $(document).ready(function () {
     $('a[action="delete"]').click(function(e) {
         e.preventDefault();
 
-        $.post($(e.target).attr('href')).success(function () {
+        $.post($(e.currentTarget).attr('href')).success(function () {
             window.location.reload();
         });
     })
