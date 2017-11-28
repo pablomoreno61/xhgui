@@ -210,7 +210,7 @@ class Xhgui_Profiles
             $index = max(round($result['raw_index']) - 1, 0);
             foreach ($keys as $key => $out) {
                 sort($result[$key]);
-                $result[$out] = $result[$key][$index];
+                $result[$out] = isset($result[$key][$index]) ? $result[$key][$index] : null;
                 unset($result[$key]);
             }
         }

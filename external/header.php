@@ -96,7 +96,7 @@ class XH
                 }
             }
         }
-    }
+   }
 
     static function stop()
     {
@@ -127,8 +127,12 @@ class XH
             $uri = $cmd . ' ' . implode(' ', array_slice($_SERVER['argv'], 1));
         }
 
-        $time = array_key_exists('REQUEST_TIME', $_SERVER) ? $_SERVER['REQUEST_TIME'] : time();
-        $requestTimeFloat = explode('.', $_SERVER['REQUEST_TIME_FLOAT']);
+        $time = array_key_exists('REQUEST_TIME', $_SERVER)
+            ? $_SERVER['REQUEST_TIME']
+            : time();
+        // In some cases there is comma instead of dot
+        $delimiter = (strpos($_SERVER['REQUEST_TIME_FLOAT'], ',') !== false) ? ',' : '.';
+        $requestTimeFloat = explode($delimiter, $_SERVER['REQUEST_TIME_FLOAT']);
         if (!isset($requestTimeFloat[1])) {
             $requestTimeFloat[1] = 0;
         }
