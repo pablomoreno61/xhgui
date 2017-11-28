@@ -38,7 +38,7 @@ class Xhgui_Twig_Extension extends Twig_Extension
         );
     }
 
-    public function urlFor($name, $params = array(), $appName = 'default')
+    public function urlFor($name, $params = array())
     {
         return  $this->_app->urlFor($name, $params);
     }
