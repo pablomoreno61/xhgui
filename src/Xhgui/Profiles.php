@@ -46,6 +46,30 @@ class Xhgui_Profiles
         )));
     }
 
+
+    /**
+     * Get a single profile run by id.
+     *
+     * @param string $id The id of the profile to get.
+     * @return Xhgui_Profile
+     */
+    public function delete($id)
+    {
+        return $this->_wrap($this->_collection->remove(array(
+            '_id' => new MongoId($id)
+        )));
+    }
+
+    /**
+     * Get a all profill.
+     *
+     * @param string $id The id of the profile to get.
+     * @return Xhgui_Profile
+     */
+    public function deleteAll()
+    {
+        return $this->_wrap($this->_collection->remove(array()));
+    }
     /**
      * Get the list of profiles for a simplified url.
      *
@@ -186,7 +210,7 @@ class Xhgui_Profiles
             $index = max(round($result['raw_index']) - 1, 0);
             foreach ($keys as $key => $out) {
                 sort($result[$key]);
-                $result[$out] = $result[$key][$index];
+                $result[$out] = isset($result[$key][$index]) ? $result[$key][$index] : null;
                 unset($result[$key]);
             }
         }

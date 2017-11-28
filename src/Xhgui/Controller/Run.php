@@ -2,6 +2,11 @@
 
 class Xhgui_Controller_Run extends Xhgui_Controller
 {
+    /**
+     * @var Xhgui_Profiles
+     */
+    private $_profiles;
+
     public function __construct($app, Xhgui_Profiles $profiles, $watches)
     {
         $this->_app = $app;
@@ -283,6 +288,31 @@ class Xhgui_Controller_Run extends Xhgui_Controller
         return $response->body(json_encode($callgraph));
     }
 
+    public function flamegraph()
+    {
+        $request = $this->_app->request();
+        $profile = $this->_profiles->get($request->get('id'));
+
+        $this->_template = 'runs/flamegraph.twig';
+        $this->set(array(
+            'profile' => $profile,
+            'date_format' => $this->_app->config('date.format'),
+        ));
+    }
+
+    public function flamegraphData()
+    {
+        $request = $this->_app->request();
+        $response = $this->_app->response();
+        $profile = $this->_profiles->get($request->get('id'));
+        $metric = $request->get('metric') ?: 'wt';
+        $threshold = (float)$request->get('threshold') ?: 0.01;
+        $flamegraph = $profile->getFlamegraph($metric, $threshold);
+
+        $response['Content-Type'] = 'application/json';
+        return $response->body(json_encode($flamegraph));
+    }
+
     public function callgraphDataDot()
     {
         $request = $this->_app->request();
@@ -296,4 +326,15 @@ class Xhgui_Controller_Run extends Xhgui_Controller
         return $response->body(json_encode($callgraph));
     }
 
+    public function delete($id)
+    {
+        $this->_profiles->delete($id);
+        $this->_app->flash('success', 'Profile was deleted.');
+    }
+
+    public function deleteAll($id)
+    {
+        $this->_profiles->deleteAll();
+        $this->_app->flash('success', 'All profiles was deleted.');
+    }
 }

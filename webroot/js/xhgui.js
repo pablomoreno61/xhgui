@@ -41,4 +41,12 @@ $(document).ready(function () {
         return false;
     });
 
+    $('a[action="delete"]').click(function(e) {
+        e.preventDefault();
+
+        $.post($(e.currentTarget).attr('href')).success(function () {
+            window.location.reload();
+        });
+    })
+
 });

@@ -34,6 +34,11 @@
                         {{ helpers.sort_link('pmu', base_url, 'pmu', paging, search) }}
                     </span>
                 </th>
+                <th class="right">
+                    <span class="tip" title="Action">
+                        Action
+                    </span>
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -69,10 +74,17 @@
             <td class="right">{{ result.get('main()', 'cpu') |as_time }}</td>
             <td class="right">{{ result.get('main()', 'mu') |as_bytes }}</td>
             <td class="right">{{ result.get('main()', 'pmu') |as_bytes }}</td>
+            <td class="right">
+                <a action="delete"  href="{{ urlFor('run.delete', {'id': result.id|trim }) }}"
+                    title="Remove item"
+                    >
+                    <i class="icon-remove"></i>
+                </a>
+            </td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="6" class="no-results">
+            <td colspan="7" class="no-results">
                 Your search conditions matched no runs. Try changing you search criteria.
             </td>
         </tr>
@@ -80,3 +92,6 @@
         </tbody>
     </table>
 </div>
+<script type="text/javascript">
+
+</script>
