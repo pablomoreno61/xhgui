@@ -114,7 +114,7 @@ $app->post('/run/delete/:id', function ($id) use ($di, $app) {
 })->name('run.delete');
 
 
-$app->post('/run/delete-all', function () use ($di, $app) {
+$app->post('/run/delete/all', function () use ($di, $app) {
     $di['runController']->deleteAll();
-})->name('run.deleteAll');
+})->name('run.delete.all');
 
