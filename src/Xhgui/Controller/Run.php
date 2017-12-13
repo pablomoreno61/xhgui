@@ -332,7 +332,7 @@ class Xhgui_Controller_Run extends Xhgui_Controller
         $this->_app->flash('success', 'Profile was deleted.');
     }
 
-    public function deleteAll($id)
+    public function deleteAll()
     {
         $this->_profiles->deleteAll();
         $this->_app->flash('success', 'All profiles was deleted.');
