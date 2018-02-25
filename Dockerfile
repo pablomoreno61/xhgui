@@ -3,6 +3,7 @@ MAINTAINER Duhon <duhon@rambler.ru>
 
 RUN apt-get update && apt-get install -y \
     libmcrypt-dev \
+    zlib1g-dev \
     git \
     vim \
     openssh-server \
@@ -14,7 +15,7 @@ RUN docker-php-ext-install mcrypt zip && pecl install mongodb && docker-php-ext-
 WORKDIR /var/xhgui
 RUN chmod 777 cache
 RUN php install.php
-
+COPY php.ini /usr/local/etc/php/conf.d/custom_php.ini
 
 EXPOSE 80
 CMD ["php", "-S", "0.0.0.0:80", "-t", "/var/xhgui/webroot"]
