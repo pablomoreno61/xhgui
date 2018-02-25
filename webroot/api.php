@@ -7,7 +7,7 @@ set_error_handler("exception_error_handler");
 
 try {
     $_SERVER = $_POST['meta']['server'];
-
+    
 	$uri = array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : null;
 	if (empty($uri)) {
 		$cmd = basename($_SERVER['argv'][0]);
