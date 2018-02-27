@@ -5,7 +5,7 @@
 class XH
 {
     static function start() 
-	{
+    {
         if (!extension_loaded('tideways_xhprof')) {
             error_log('xhgui - either extension tideways must be loaded');
             return;
@@ -20,40 +20,40 @@ class XH
 
     static function stop()
     {
-		ignore_user_abort(true);
+        ignore_user_abort(true);
         flush();
-		
-		$data = [
-			'profile' => tideways_xhprof_disable(),
-			'meta' => [
-				'server' => $_SERVER,
-				'get' => $_GET,
-				'env' => $_ENV,
-			]
-		];
-		
+
+        $data = [
+            'profile' => tideways_xhprof_disable(),
+            'meta' => [
+                'server' => $_SERVER,
+                'get' => $_GET,
+                'env' => $_ENV,
+            ]
+        ];
+
         try {
-			self::send('http://xhgui/api.php', $data);
+            self::send('http://xhgui/api.php', $data);
         } catch (Exception $e) {
             error_log('xhgui - ' . $e->getMessage());
         }
     }
-	
-	private static function send($url, $data)
-	{
-		$options = [
-			'http' => [
-				'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-				'method'  => 'POST',
-				'content' => http_build_query($data)
-			]
-		];
 
-		$context = stream_context_create($options);
-		$result = file_get_contents($url, false, $context);
-		if ($result === false) { 
-			error_log(file_get_contents('php://input'));
-			throw new Exception('fail to send data');
-		}
-	}
+    private static function send($url, $data)
+    {
+        $options = [
+            'http' => [
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'POST',
+                'content' => http_build_query($data)
+            ]
+        ];
+
+        $context = stream_context_create($options);
+        $result = file_get_contents($url, false, $context);
+        if ($result === false) {
+            error_log(file_get_contents('php://input'));
+            throw new Exception('fail to send data');
+        }
+    }
 }
