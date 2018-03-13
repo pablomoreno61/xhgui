@@ -215,7 +215,14 @@
                 for (var i = 0, l = cols.length; i < l; i++) {
                     var field = cols[i].sortCol.field;
                     var sign = cols[i].sortAsc ? 1 : -1;
-                    var value1 = dataRow1[field], value2 = dataRow2[field];
+                    var type = cols[i].sortCol.cssClass === 'cell-int'
+                        || cols[i].sortCol.cssClass === 'cell-percent'
+                        ? 'int' : 'string';
+                    if (type == 'int') {
+                        var value1 = new Number(dataRow1[field]), value2 = new Number(dataRow2[field]);
+                    } else {
+                        var value1 = new String(dataRow1[field]), value2 = new String(dataRow2[field]);
+                    }
                     var result = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1)) * sign;
                     if (result != 0) {
                         return result;
