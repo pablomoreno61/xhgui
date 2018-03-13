@@ -199,13 +199,15 @@
             forceFitColumns: true,
             showHeaderRow: false,
             headerRowHeight: 30,
-            explicitInitialization: true
+            explicitInitialization: true,
+            multiColumnSort: false
         };
 
         var $gridContainer = $('[data-role="grid"]');
 
         var dataView = new Slick.Data.DataView();
         var grid = new Slick.Grid($gridContainer, dataView, columns, options);
+
         grid.onSort.subscribe(function(e, args) {
             var cols = args.multiColumnSort ? args.sortCols : [args];
 
@@ -226,15 +228,12 @@
         });
         grid.init();
         var data = {{ profile|json_encode|raw }};
-        dataView.onRowsChanged.subscribe(function (e, args) {
-            grid.invalidateRows(args.rows);
-            grid.render();
-        });
         dataView.beginUpdate();
         dataView.setItems(data);
         dataView.setFilterArgs({searchString: ''});
         dataView.setFilter(function(item, args) {
-            return !(args.searchString !== '' && item['name'].indexOf(args.searchString) === -1);
+            var re = new RegExp(args.searchString.replace(/\\/g, '\\\\'), 'ig');
+            return args.searchString === '' || re.test(item['name']);
         });
         dataView.endUpdate();
 
@@ -247,6 +246,7 @@
                 searchString: this.value
             });
             dataView.refresh();
+            grid.invalidate();
         });
 
         $(window).on('resize',function() {
