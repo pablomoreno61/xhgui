@@ -30,7 +30,7 @@ return array(
     // Profile 1 in 100 requests.
     // You can return true to profile every request.
     'profiler.enable' => function() {
-        return isset($_REQUEST['XHPROF']);  //!preg_match('/(xhgui|backend)/', $_SERVER['REQUEST_URI']);
+        return isset($_REQUEST['XHPROF']) || isset($_SERVER['XHPROF']);  //!preg_match('/(xhgui|backend)/', $_SERVER['REQUEST_URI']);
     },
 
     'profiler.simple_url' => function($url) {
