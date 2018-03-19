@@ -84,7 +84,7 @@
         };
         var groupFormatter =  function(column, row, data) {
             var namesPart = (data || '').split('::');
-            namesPart = namesPart.length ? namesPart.shift().split(/\\|_/) : namesPart;
+            namesPart = namesPart.length ? namesPart.shift().split(/\\|(?<=[A-Z][^_]+)_/) : namesPart;
             var className = namesPart.pop();
             var vendor = namesPart.length ? '<b class="cell-p-vendor">' + namesPart.splice(0, 1) + '</b>' : '';
             var path = namesPart.length ? '<b class="cell-p-path">' + namesPart.join(' / ') + '</b>' : '';
@@ -96,7 +96,7 @@
                 return i && c !== "." && !((a.length - i) % 3) ? ' ' + c : c;
             })
         };
-        var groupFormater = function(field) {
+        var sumFormater = function(field) {
             return function(totals) {
                 return totals.sum[field]
             }
@@ -156,7 +156,7 @@
                 sortable: true,
                 cssClass: "cell-int",
                 formatter: numberFormater,
-                groupTotalsFormatter: groupFormater('ecpu')
+                groupTotalsFormatter: sumFormater('ecpu')
             },
             {
                 id: "wt",
@@ -182,7 +182,7 @@
                 sortable: true,
                 cssClass: "cell-percent",
                 formatter: percentFormater(1),
-                groupTotalsFormatter: groupFormater('pewt')
+                groupTotalsFormatter: sumFormater('pewt')
             },
             {
                 id: "percent",
