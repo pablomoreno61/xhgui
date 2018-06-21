@@ -6,6 +6,7 @@ function exception_error_handler($severity, $message, $file, $line) {
 set_error_handler("exception_error_handler");
 
 try {
+    $_POST = json_decode(file_get_contents("php://input"), true);
     $_SERVER = $_POST['meta']['server'];
     
     $uri = array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : null;
